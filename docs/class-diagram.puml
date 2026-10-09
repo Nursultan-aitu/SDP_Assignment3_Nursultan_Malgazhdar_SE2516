@@ -1,0 +1,51 @@
+@startuml
+title Multi-Channel Notification Gateway — Bridge Pattern
+
+left to right direction
+skinparam classAttributeIconSize 0
+
+interface MessageSender <<Implementor>> {
+  + sendMessage(recipient: String, title: String, body: String): boolean
+  + isAvailable(): boolean
+  + getChannelName(): String
+}
+
+abstract class Notification <<Abstraction>> {
+  # sender: MessageSender
+  + setSender(sender: MessageSender): void
+  {abstract} + send(recipient: String, message: String): void
+}
+
+class UrgentNotification <<Refined Abstraction>> {
+  - fallbackSender: MessageSender
+  + setFallbackSender(sender: MessageSender): void
+}
+class EncryptedNotification <<Refined Abstraction>>
+class ScheduledBatchNotification <<Refined Abstraction>> {
+  - recipients: List<String>
+  + sendBatch(message: String): BatchSummary
+}
+class MarketingNotification <<Refined Abstraction>>
+
+class TelegramMessageSender <<Concrete Implementor>>
+class EmailMessageSender <<Concrete Implementor>>
+class SmsMessageSender <<Concrete Implementor>>
+class KafkaEventSender <<Concrete Implementor>>
+class PushNotificationSender <<Concrete Implementor>>
+
+Notification o-right-> MessageSender : sender / Bridge
+UrgentNotification --> MessageSender : fallbackSender
+
+Notification <|-- UrgentNotification
+Notification <|-- EncryptedNotification
+Notification <|-- ScheduledBatchNotification
+Notification <|-- MarketingNotification
+
+MessageSender <|.. TelegramMessageSender
+MessageSender <|.. EmailMessageSender
+MessageSender <|.. SmsMessageSender
+MessageSender <|.. KafkaEventSender
+MessageSender <|.. PushNotificationSender
+
+@enduml
+
