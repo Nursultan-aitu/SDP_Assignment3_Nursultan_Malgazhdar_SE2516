@@ -1,10 +1,12 @@
 package kz.aitu.notificationgateway;
 
 import kz.aitu.notificationgateway.notification.EncryptedNotification;
+import kz.aitu.notificationgateway.notification.MarketingNotification;
 import kz.aitu.notificationgateway.notification.Notification;
 import kz.aitu.notificationgateway.notification.ScheduledBatchNotification;
 import kz.aitu.notificationgateway.notification.UrgentNotification;
 import kz.aitu.notificationgateway.sender.EmailMessageSender;
+import kz.aitu.notificationgateway.sender.PushNotificationSender;
 import kz.aitu.notificationgateway.sender.SmsMessageSender;
 import kz.aitu.notificationgateway.sender.TelegramMessageSender;
 
@@ -45,6 +47,10 @@ public final class NotificationGatewayDemo {
         TelegramMessageSender unavailableTelegram = new TelegramMessageSender(false);
         Notification withFallback = new UrgentNotification(unavailableTelegram, sms);
         withFallback.send("+77010000004", "Use the backup channel.");
+
+        printScenario("6. MarketingNotification + PushNotificationSender");
+        Notification marketing = new MarketingNotification(new PushNotificationSender());
+        marketing.send("device-token-2516", "Get 20% off this weekend.");
     }
 
     private static void printScenario(String title) {
